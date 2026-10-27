@@ -1,0 +1,32 @@
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-text-fill: #344054;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-padding: 0 12 0 12;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover,
+.nav-button:focused,
+.nav-button:pressed {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.nav-button:pressed {
+    -fx-effect: none;
+}
+
+.nav-button:selected {
+    -fx-background-color: transparent;
+}
+
+.nav-button-active {
+    -fx-text-fill: #315DB5;
+    -fx-font-weight: bold;
+}

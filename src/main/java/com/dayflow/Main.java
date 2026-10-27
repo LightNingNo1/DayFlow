@@ -1,17 +1,49 @@
 package com.dayflow;
 
-//TIP 要<b>运行</b>代码，请按 <shortcut actionId="Run"/> 或
-// 点击装订区域中的 <icon src="AllIcons.Actions.Execute"/> 图标。
-public class Main {
-    public static void main(String[] args) {
-        //TIP 当文本光标位于高亮显示的文本处时按 <shortcut actionId="ShowIntentionActions"/>
-        // 查看 IntelliJ IDEA 建议如何修正。
-        System.out.printf("Hello and welcome!");
+import com.dayflow.model.Task;
+import com.dayflow.store.TaskStore;
+import com.dayflow.ui.RootView;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP 按 <shortcut actionId="Debug"/> 开始调试代码。我们已经设置了一个 <icon src="AllIcons.Debugger.Db_set_breakpoint"/> 断点
-            // 但您始终可以通过按 <shortcut actionId="ToggleLineBreakpoint"/> 添加更多断点。
-            System.out.println("i = " + i);
-        }
+import java.time.LocalDate;
+
+/**
+ * 应用启动入口：准备数据、组装根视图并显示窗口。
+ */
+public class Main extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        TaskStore store = new TaskStore();
+        seedDemoTasks(store);
+
+        Scene scene = new Scene(new RootView(store), 1000, 650);
+        scene.getStylesheets().add(
+                getClass().getResource("/css/dayflow.css").toExternalForm()
+        );
+
+        stage.setTitle("DayFlow - 日程管理");
+        stage.setMinWidth(760);
+        stage.setMinHeight(500);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    // 初始化演示数据
+    private static void seedDemoTasks(TaskStore store) {
+        LocalDate today = LocalDate.now();
+
+        store.add(new Task(
+                "完成课程作业", "09:00", "学习", today, false));
+        store.add(new Task(
+                "开发 DayFlow 主界面", "14:00", "项目", today, false));
+        store.add(new Task(
+                "复习专业课程", "19:30", "学习", today, true));
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
