@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
+import javafx.scene.image.Image;
 
 /**
  * 应用启动入口：准备数据、组装根视图并显示窗口。
@@ -23,6 +24,11 @@ public class Main extends Application {
         scene.getStylesheets().add(
                 getClass().getResource("/css/dayflow.css").toExternalForm()
         );
+
+        Image icon = new Image(
+                getClass().getResourceAsStream("/images/dayflow-icon.png")
+        );
+        stage.getIcons().add(icon);
 
         stage.setTitle("DayFlow - 日程管理");
         stage.setMinWidth(760);
