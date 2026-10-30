@@ -155,7 +155,8 @@ public class TaskListView extends VBox {
                 "-fx-font-size: 15px;" +
                         "-fx-font-weight: bold;" +
                         "-fx-text-fill: " +
-                        (task.isCompleted() ? "#98A2B3" : "#263449") + ";"
+                        (task.isCompleted() ? "#98A2B3" :
+                                task.isOverDue() ? "#E05252" : "#263449") + ";"
         );
 
         if (task.isCompleted()) {

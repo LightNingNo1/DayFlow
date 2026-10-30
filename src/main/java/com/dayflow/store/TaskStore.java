@@ -5,6 +5,7 @@ import com.dayflow.model.TaskView;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -16,6 +17,16 @@ public class TaskStore {
 
     public void add(Task task) {
         tasks.add(task);
+
+        tasks.sort(
+                Comparator.comparing(
+                        Task::getDate,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ).thenComparing(
+                        Task::getTime,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                )
+        );
     }
 
     public void remove(Task task) {

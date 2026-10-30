@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 /**
@@ -67,10 +68,7 @@ public class TaskDialog extends Dialog<Task> {
                 return null;
             }
 
-            String time = timeField.getText().trim();
-            if (time.isEmpty()) {
-                time = "未设定时间";
-            }
+            LocalTime time = LocalTime.parse(timeField.getText());
 
             return new Task(
                     title,
