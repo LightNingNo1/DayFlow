@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
  * 右侧主内容区：标题栏、任务计数和任务列表。
@@ -25,17 +26,23 @@ public class TaskListView extends VBox {
 
     private final TaskStore store;
     private final Runnable onNewTask;
+    private final Consumer<TaskView> onImported;
 
     private final Label pageTitle;
     private final Label countLabel;
+    private final HBox header;
+    private final Button addButton;
+    private final Button importButton;
     private final VBox taskList = new VBox(12);
 
     private TaskView currentView = TaskView.TODAY;
 
-    public TaskListView(TaskStore store, Runnable onNewTask) {
+    public TaskListView(TaskStore store, Runnable onNewTask,
+                        Consumer<TaskView> onImported) {
         super(22);
         this.store = store;
         this.onNewTask = onNewTask;
+        this.onImported = onImported;
 
         setPadding(new Insets(32, 36, 28, 36));
 
@@ -56,7 +63,7 @@ public class TaskListView extends VBox {
         VBox heading = new VBox(6, pageTitle, dateLabel);
         HBox.setHgrow(heading, Priority.ALWAYS);
 
-        Button addButton = new Button("+ 新建任务");
+        addButton = new Button("+ 新建任务");
         addButton.setStyle(
                 "-fx-background-color: #315DB5;" +
                         "-fx-text-fill: white;" +
@@ -67,7 +74,18 @@ public class TaskListView extends VBox {
         );
         addButton.setOnAction(e -> onNewTask.run());
 
-        HBox header = new HBox(12, heading, addButton);
+        importButton = new Button("📥 从 Canvas 导入作业");
+        importButton.setStyle(
+                "-fx-background-color: #007A33;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-background-radius: 8px;" +
+                        "-fx-padding: 11px 16px;" +
+                        "-fx-cursor: hand;"
+        );
+        importButton.setOnAction(e -> SettingsDialog.show(store, onImported));
+
+        header = new HBox(12, heading, addButton);
         header.setAlignment(Pos.CENTER_LEFT);
 
         countLabel = new Label();
@@ -95,10 +113,25 @@ public class TaskListView extends VBox {
 
         pageTitle.setText(switch (view) {
             case TODAY -> "今天的安排";
+            case HOMEWORK -> "我的作业";
             case ALL -> "所有任务";
             case COMPLETED -> "已完成的任务";
         });
 
+        // 标题栏右侧按钮：HOMEWORK 视图显示"从 Canvas 导入作业"，其他显示"新建任务"
+        header.getChildren().remove(addButton);
+        header.getChildren().remove(importButton);
+        if (view == TaskView.HOMEWORK) {
+            header.getChildren().add(importButton);
+        } else {
+            header.getChildren().add(addButton);
+        }
+
+        render();
+    }
+
+    /** 重新渲染当前视图，供外部（如 Canvas 导入完成后）刷新列表。 */
+    public void refresh() {
         render();
     }
 
@@ -113,7 +146,12 @@ public class TaskListView extends VBox {
         );
 
         if (visibleTasks.isEmpty()) {
-            Label empty = new Label("这里还没有任务，试着新建一项吧。");
+            String hint = switch (currentView) {
+                case HOMEWORK -> "这里还没有 Canvas 作业。点击右上角的“📥 从 Canvas 导入作业”试试。";
+                case COMPLETED -> "这里还没有已完成的任务。";
+                default -> "这里还没有任务，试着新建一项吧。";
+            };
+            Label empty = new Label(hint);
             empty.setStyle(
                     "-fx-text-fill: #98A2B3;" +
                             "-fx-font-size: 15px;"

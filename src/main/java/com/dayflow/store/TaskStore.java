@@ -43,6 +43,8 @@ public class TaskStore {
                 .filter(task -> switch (view) {
                     case TODAY -> task.getDate().equals(today)
                             && !task.isCompleted();
+                    case HOMEWORK -> task.isCanvasHomework()
+                            && !task.isCompleted();
                     case COMPLETED -> task.isCompleted();
                     case ALL -> true;
                 })
@@ -55,6 +57,15 @@ public class TaskStore {
     public long unfinishedCount() {
         return tasks.stream()
                 .filter(task -> !task.isCompleted())
+                .count();
+    }
+
+    /**
+     * 未完成的 Canvas 作业总数。
+     */
+    public long homeworkCount() {
+        return tasks.stream()
+                .filter(t -> t.isCanvasHomework() && !t.isCompleted())
                 .count();
     }
 }

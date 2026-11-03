@@ -9,19 +9,25 @@ import java.time.LocalTime;
  */
 public class Task {
 
+    public enum Source {
+        MANUAL, CANVAS
+    }
+
     private final String title;
     private final LocalTime time;
     private final String category;
     private final LocalDate date;
     private boolean completed;
+    private final Source source;
 
     public Task(String title, LocalTime time, String category,
-                LocalDate date, boolean completed) {
+                LocalDate date, boolean completed, Source source) {
         this.title = title;
         this.time = time;
         this.category = category;
         this.date = date;
         this.completed = completed;
+        this.source = source;
     }
 
     public String getTitle() {
@@ -48,8 +54,16 @@ public class Task {
         this.completed = completed;
     }
 
-    public boolean isOverDue(){
-        if(this.date == null || this.time == null){
+    public Source getSource() {
+        return source;
+    }
+
+    public boolean isCanvasHomework() {
+        return source == Source.CANVAS;
+    }
+
+    public boolean isOverDue() {
+        if (this.date == null || this.time == null) {
             return false;
         }
 

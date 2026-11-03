@@ -44,11 +44,11 @@ public class Main extends Application {
         LocalDate today = LocalDate.now();
 
         store.add(new Task(
-                "完成课程作业", LocalTime.of(9, 30), "学习", today, false));
+                "完成课程作业", LocalTime.of(9, 30), "学习", today, false, Task.Source.MANUAL));
         store.add(new Task(
-                "开发 DayFlow 主界面", LocalTime.of(14, 30), "项目", today, false));
+                "开发 DayFlow 主界面", LocalTime.of(14, 30), "项目", today, false, Task.Source.MANUAL));
         store.add(new Task(
-                "复习专业课程", LocalTime.of(19, 30), "学习", today, true));
+                "复习专业课程", LocalTime.of(19, 30), "学习", today, true, Task.Source.MANUAL));
     }
 
     public static void main(String[] args) {

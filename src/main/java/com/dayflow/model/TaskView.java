@@ -6,6 +6,7 @@ package com.dayflow.model;
 public enum TaskView {
 
     TODAY("今天"),
+    HOMEWORK("作业"),
     ALL("所有任务"),
     COMPLETED("已完成");
 

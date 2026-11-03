@@ -68,14 +68,25 @@ public class TaskDialog extends Dialog<Task> {
                 return null;
             }
 
-            LocalTime time = LocalTime.parse(timeField.getText());
+            LocalTime time;
+            String timeText = timeField.getText().trim();
+            if (timeText.isEmpty()) {
+                time = LocalTime.of(9, 0); // 默认 9 点
+            } else {
+                try {
+                    time = LocalTime.parse(timeText);
+                } catch (Exception e) {
+                    time = LocalTime.of(9, 0);
+                }
+            }
 
             return new Task(
                     title,
                     time,
                     categoryBox.getValue(),
                     LocalDate.now(),
-                    false
+                    false,
+                    Task.Source.MANUAL
             );
         });
     }

@@ -79,11 +79,15 @@ public class Sidebar extends StackPane {
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
         Label footer = new Label("让每一天都有条理");
-        footer.setStyle("-fx-text-fill: #98A2B3;");
+        footer.setStyle(
+                "-fx-text-fill: #98A2B3;" +
+                        "-fx-font-size: 11px;"
+        );
 
         content.getChildren().addAll(
                 logo, section,
                 createNavButton("☀", TaskView.TODAY, onSelect),
+                createNavButton("📘", TaskView.HOMEWORK, onSelect),
                 createNavButton("☷", TaskView.ALL, onSelect),
                 createNavButton("✓", TaskView.COMPLETED, onSelect),
                 spacer, footer

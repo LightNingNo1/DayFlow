@@ -19,7 +19,7 @@ public class RootView extends BorderPane {
         setStyle("-fx-background-color: #F5F7F3;");
 
         sidebar = new Sidebar(this::show);
-        taskListView = new TaskListView(store, this::openNewTaskDialog);
+        taskListView = new TaskListView(store, this::openNewTaskDialog, this::show);
 
         setLeft(sidebar);
         setCenter(taskListView);
