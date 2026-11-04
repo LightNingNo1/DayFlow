@@ -69,13 +69,30 @@ public final class AssignmentMapper {
                 course = "Canvas";
             }
 
+            // 动态算 urgency：离截止日期越近越紧急
+            double daysLeft = java.time.Duration.between(
+                    java.time.LocalDateTime.now(), when).toSeconds() / 86400.0;
+            int urgency;
+            if (daysLeft <= 0) urgency = 5;
+            else if (daysLeft <= 1) urgency = 5;
+            else if (daysLeft <= 3) urgency = 4;
+            else if (daysLeft <= 7) urgency = 3;
+            else if (daysLeft <= 14) urgency = 2;
+            else urgency = 1;
+
             result.add(new Task(
                     title.trim(),
                     when.toLocalTime(),
                     course.trim(),
                     date,
                     false,
-                    Task.Source.CANVAS
+                    Task.Source.CANVAS,
+                    4,          // importance: Canvas 作业默认比较重要
+                    urgency,    // 动态 urgency
+                    90,         // estimatedMinutes: 默认 90min
+                    3,          // difficulty: 默认中等
+                    true,       // timeConstraint: Canvas 作业硬截止
+                    0           // progress: 默认 0
             ));
         }
 

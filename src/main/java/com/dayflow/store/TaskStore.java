@@ -1,6 +1,7 @@
 package com.dayflow.store;
 
 import com.dayflow.model.Task;
+import com.dayflow.model.TaskPriority;
 import com.dayflow.model.TaskView;
 
 import java.time.LocalDate;
@@ -17,16 +18,6 @@ public class TaskStore {
 
     public void add(Task task) {
         tasks.add(task);
-
-        tasks.sort(
-                Comparator.comparing(
-                        Task::getDate,
-                        Comparator.nullsLast(Comparator.naturalOrder())
-                ).thenComparing(
-                        Task::getTime,
-                        Comparator.nullsLast(Comparator.naturalOrder())
-                )
-        );
     }
 
     public void remove(Task task) {
@@ -47,12 +38,30 @@ public class TaskStore {
                             && !task.isCompleted();
                     case COMPLETED -> task.isCompleted();
                     case ALL -> true;
+                    case PRIORITY -> !task.isCompleted();
                 })
+                .sorted(sortBy(view))
                 .toList();
     }
 
     /**
-     * 尚未完成的任务总数（不区分视图）。
+     * 不同视图的默认排序策略。
+     */
+    private Comparator<Task> sortBy(TaskView view) {
+        if (view == TaskView.PRIORITY) {
+            // 按优先级分数从高到低
+            return Comparator.comparingDouble(TaskPriority::score).reversed();
+        }
+
+        // 其他视图默认按日期 → 时间排序
+        return Comparator
+                .comparing(Task::getDate, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(Task::getTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(Task::priority, Comparator.reverseOrder()); // 同时间则优先级高在前
+    }
+
+    /**
+     * 尚未完成的任务总数。
      */
     public long unfinishedCount() {
         return tasks.stream()

@@ -5,6 +5,7 @@ package com.dayflow.model;
  */
 public enum TaskView {
 
+    PRIORITY("优先级"),
     TODAY("今天"),
     HOMEWORK("作业"),
     ALL("所有任务"),

@@ -1,5 +1,6 @@
 package com.dayflow.ui;
 
+import com.dayflow.model.Task;
 import com.dayflow.model.TaskView;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -21,29 +22,30 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * 左侧导航栏：Logo、视图切换按钮和底部标语。
- *
- * <p>选中高亮由整条侧栏共用的一个色块实现，切换视图时色块从旧按钮
- * 滑动到新按钮的位置。
+ * 左侧导航栏。
  */
 public class Sidebar extends StackPane {
 
     private static final String ACTIVE_CLASS = "nav-button-active";
-
     private static final Color HIGHLIGHT_COLOR = Color.web("#bdd3fb");
-
     private static final Duration SLIDE_DURATION = Duration.millis(260);
+
+    private final List<TaskView> ORDER = List.of(
+            TaskView.PRIORITY, TaskView.TODAY, TaskView.HOMEWORK,
+            TaskView.ALL, TaskView.COMPLETED);
+
+    private final List<String> ICONS = List.of(
+            "🎯", "☀", "📘", "☷", "✓");
 
     private final Map<TaskView, Button> navButtons = new EnumMap<>(TaskView.class);
 
-    // 高亮色块与它所在的透明层，层级在内容之下
     private final Rectangle highlight = new Rectangle();
     private final Pane highlightLayer = new Pane(highlight);
-
     private final VBox content = new VBox(18);
 
     private Button activeButton;
@@ -59,7 +61,6 @@ public class Sidebar extends StackPane {
         highlight.setManaged(false);
 
         highlightLayer.setMouseTransparent(true);
-
         content.setPadding(new Insets(28, 18, 20, 18));
 
         Label logo = new Label("◈  DayFlow");
@@ -84,37 +85,26 @@ public class Sidebar extends StackPane {
                         "-fx-font-size: 11px;"
         );
 
-        content.getChildren().addAll(
-                logo, section,
-                createNavButton("☀", TaskView.TODAY, onSelect),
-                createNavButton("📘", TaskView.HOMEWORK, onSelect),
-                createNavButton("☷", TaskView.ALL, onSelect),
-                createNavButton("✓", TaskView.COMPLETED, onSelect),
-                spacer, footer
-        );
+        content.getChildren().addAll(logo, section);
+        for (int i = 0; i < ORDER.size(); i++) {
+            content.getChildren().add(
+                    createNavButton(ICONS.get(i), ORDER.get(i), onSelect));
+        }
+        content.getChildren().addAll(spacer, footer);
 
         getChildren().addAll(highlightLayer, content);
     }
 
-    /**
-     * 每次布局完成（首次显示、窗口缩放）都把色块对齐到当前选中项，
-     * 保证应用刚打开时色块就停在“今天”上。
-     */
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-
         if (!isSliding()) {
             updateHighlight(false);
         }
     }
 
-    /**
-     * 高亮指定导航项，色块会从当前位置滑动过去。
-     */
     public void select(TaskView view) {
         Button button = navButtons.get(view);
-
         if (button == null || button == activeButton) {
             return;
         }
@@ -127,7 +117,6 @@ public class Sidebar extends StackPane {
         }
         button.getStyleClass().add(ACTIVE_CLASS);
 
-        // 首次选中（还没有位置可言）时直接就位，之后都走滑动
         updateHighlight(previous != null);
     }
 
@@ -138,23 +127,16 @@ public class Sidebar extends StackPane {
         button.setPrefHeight(42);
         button.getStyleClass().add("nav-button");
         button.setOnAction(e -> onSelect.accept(view));
-
         navButtons.put(view, button);
-
         return button;
     }
 
-    /**
-     * 让高亮色块对齐到当前按钮；animate 为 true 时纵向滑动过去。
-     */
     private void updateHighlight(boolean animate) {
         Bounds target = activeBounds();
-
         if (target == null) {
             highlight.setVisible(false);
             return;
         }
-
         highlight.setVisible(true);
 
         if (slide != null) {
@@ -162,7 +144,6 @@ public class Sidebar extends StackPane {
             slide = null;
         }
 
-        // 横向位置与宽度直接对齐（各按钮同宽）
         highlight.setLayoutX(target.getMinX());
         highlight.setWidth(target.getWidth());
 
@@ -179,27 +160,17 @@ public class Sidebar extends StackPane {
                 new KeyValue(highlight.heightProperty(), target.getHeight(),
                         Interpolator.EASE_BOTH)
         ));
-
         slide.play();
     }
 
-    /**
-     * 当前选中按钮在高亮层坐标系中的位置。
-     *
-     * <p>直接用 VBox 已经算好的 layoutX/layoutY/width/height，而不是走
-     * localToScene：首次布局时节点坐标变换尚未刷新，用变换换算会拿到
-     * 上一帧（全 0）的位置，导致色块落不到“今天”上。
-     */
     private Bounds activeBounds() {
         if (activeButton == null) {
             return null;
         }
-
         double x = content.getLayoutX() + activeButton.getLayoutX()
                 - highlightLayer.getLayoutX();
         double y = content.getLayoutY() + activeButton.getLayoutY()
                 - highlightLayer.getLayoutY();
-
         return new BoundingBox(x, y,
                 activeButton.getWidth(), activeButton.getHeight());
     }
