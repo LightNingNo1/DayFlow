@@ -12,6 +12,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -51,7 +52,8 @@ public class Sidebar extends StackPane {
     private Button activeButton;
     private Timeline slide;
 
-    public Sidebar(Consumer<TaskView> onSelect) {
+    public Sidebar(Consumer<TaskView> onSelect, Runnable onToggleFloating,
+                   Runnable onOpenPreferences) {
         setPrefWidth(210);
         setStyle("-fx-background-color: white;");
 
@@ -79,6 +81,34 @@ public class Sidebar extends StackPane {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
+        Button floatingButton = new Button("◱  桌面悬浮窗");
+        floatingButton.setMaxWidth(Double.MAX_VALUE);
+        floatingButton.setPrefHeight(34);
+        floatingButton.setStyle(
+                "-fx-background-color: #F2F5FA;" +
+                        "-fx-text-fill: #315DB5;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-background-radius: 8px;" +
+                        "-fx-cursor: hand;"
+        );
+        floatingButton.setTooltip(new Tooltip(
+                "显示今天的任务悬浮窗（" + com.dayflow.util.AppPreferences.getHotkey()
+                        + " 切换鼠标穿透）"));
+        floatingButton.setOnAction(e -> onToggleFloating.run());
+
+        Button settingsButton = new Button("⚙  设置");
+        settingsButton.setMaxWidth(Double.MAX_VALUE);
+        settingsButton.setPrefHeight(34);
+        settingsButton.setStyle(
+                "-fx-background-color: transparent;" +
+                        "-fx-text-fill: #344054;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-cursor: hand;"
+        );
+        settingsButton.setTooltip(new Tooltip(
+                "悬浮窗透明度/颜色/尺寸、快捷键与 Canvas 导入"));
+        settingsButton.setOnAction(e -> onOpenPreferences.run());
+
         Label footer = new Label("让每一天都有条理");
         footer.setStyle(
                 "-fx-text-fill: #98A2B3;" +
@@ -90,7 +120,7 @@ public class Sidebar extends StackPane {
             content.getChildren().add(
                     createNavButton(ICONS.get(i), ORDER.get(i), onSelect));
         }
-        content.getChildren().addAll(spacer, footer);
+        content.getChildren().addAll(spacer, settingsButton, floatingButton, footer);
 
         getChildren().addAll(highlightLayer, content);
     }

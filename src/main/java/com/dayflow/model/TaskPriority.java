@@ -77,4 +77,13 @@ public final class TaskPriority {
         if (score >= 0) return "🟡 P3";
         return "⚪ P4";
     }
+
+    /** 与 {@link #tier(double)} 对应的颜色，用于标签/圆点着色。 */
+    public static String color(double score) {
+        if (score >= 12) return "#E05252";
+        if (score >= 8) return "#EA983A";
+        if (score >= 4) return "#F4914D";
+        if (score >= 0) return "#F7B500";
+        return "#98A2B3";
+    }
 }

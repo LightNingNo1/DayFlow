@@ -84,7 +84,7 @@ public class TaskListView extends VBox {
 
         importButton = new Button("📥 从 Canvas 导入作业");
         importButton.setStyle(buttonGreen());
-        importButton.setOnAction(e -> SettingsDialog.show(store, onImported));
+        importButton.setOnAction(e -> WebViewImportDialog.open(store, onImported));
 
         header = new HBox(12, heading, addButton);
         header.setAlignment(Pos.CENTER_LEFT);
@@ -241,12 +241,13 @@ public class TaskListView extends VBox {
         Label priorityLabel = new Label(TaskPriority.tier(task.priority()));
         priorityLabel.setStyle(
                 "-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: "
-                        + priorityColor(task.priority()) + ";");
+                        + TaskPriority.color(task.priority()) + ";");
 
         CheckBox checkBox = new CheckBox();
         checkBox.setSelected(task.isCompleted());
         checkBox.setOnAction(e -> {
             task.setCompleted(checkBox.isSelected());
+            store.touch();
             render();
         });
 
@@ -296,7 +297,7 @@ public class TaskListView extends VBox {
         scoreLabel.setStyle(
                 "-fx-font-size: 22px;" +
                         "-fx-font-weight: bold;" +
-                        "-fx-text-fill: " + priorityColor(task.priority()) + ";");
+                        "-fx-text-fill: " + TaskPriority.color(task.priority()) + ";");
 
         Label tierLabel = new Label("等级 " + TaskPriority.tier(task.priority()));
         tierLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #667085;");
@@ -340,14 +341,6 @@ public class TaskListView extends VBox {
         else color = "#263449";
         String strike = task.isCompleted() ? "; -fx-strikethrough: true;" : "";
         return "-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: " + color + strike;
-    }
-
-    private String priorityColor(double score) {
-        if (score >= 12) return "#E05252";
-        if (score >= 8) return "#EA983A";
-        if (score >= 4) return "#F4914D";
-        if (score >= 0) return "#F7B500";
-        return "#98A2B3";
     }
 
     private String buttonBlue() {

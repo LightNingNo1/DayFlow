@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 任务数据仓库：负责任务的增删和按视图查询。
@@ -15,13 +16,32 @@ import java.util.List;
 public class TaskStore {
 
     private final List<Task> tasks = new ArrayList<>();
+    private final List<Runnable> listeners = new CopyOnWriteArrayList<>();
+
+    /** 注册数据变更监听（悬浮窗等外部视图用来即时刷新）。 */
+    public void addListener(Runnable listener) {
+        listeners.add(listener);
+    }
+
+    /** 任务内容被就地修改（如勾选完成）后，通知监听者。 */
+    public void touch() {
+        fireChange();
+    }
+
+    private void fireChange() {
+        for (Runnable listener : listeners) {
+            listener.run();
+        }
+    }
 
     public void add(Task task) {
         tasks.add(task);
+        fireChange();
     }
 
     public void remove(Task task) {
         tasks.remove(task);
+        fireChange();
     }
 
     /**

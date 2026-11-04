@@ -2,6 +2,7 @@ package com.dayflow;
 
 import com.dayflow.model.Task;
 import com.dayflow.store.TaskStore;
+import com.dayflow.ui.FloatingWindow;
 import com.dayflow.ui.RootView;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -36,6 +37,9 @@ public class Main extends Application {
         stage.setMinHeight(500);
         stage.setScene(scene);
         stage.show();
+
+        // 桌面悬浮窗：常驻最前显示今天的任务
+        FloatingWindow.showAtStartup(store);
     }
 
     // 初始化演示数据（带六维度优先级）
