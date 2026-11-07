@@ -20,7 +20,9 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         TaskStore store = new TaskStore();
-        seedDemoTasks(store);
+        if (store.isEmpty()) {
+            seedDemoTasks(store);
+        }
 
         Scene scene = new Scene(new RootView(store), 1000, 650);
         scene.getStylesheets().add(

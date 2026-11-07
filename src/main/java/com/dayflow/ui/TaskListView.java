@@ -136,9 +136,12 @@ public class TaskListView extends VBox {
 
         List<Task> visibleTasks = store.visibleTasks(currentView);
 
+        long unfinishedHere = visibleTasks.stream()
+                .filter(task -> !task.isCompleted())
+                .count();
         countLabel.setText(
                 visibleTasks.size() + " 项任务 · " +
-                        store.unfinishedCount() + " 项尚未完成"
+                        unfinishedHere + " 项尚未完成"
         );
 
         if (visibleTasks.isEmpty()) {

@@ -39,6 +39,7 @@ public class TaskDialog extends Dialog<Task> {
 
         ButtonType saveType = new ButtonType("保存", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
+        DialogTheme.apply(getDialogPane());
 
         // —— 基本信息 ——
         TextField titleField = new TextField();
@@ -112,7 +113,7 @@ public class TaskDialog extends Dialog<Task> {
         dimHeading.setStyle(
                 "-fx-font-size: 13px;" +
                         "-fx-font-weight: bold;" +
-                        "-fx-text-fill: #315DB5;"
+                        "-fx-text-fill: " + DialogTheme.HEADING + ";"
         );
 
         HBox dimHeader = new HBox(dimHeading, new VBox(), scoreBox);
@@ -122,9 +123,9 @@ public class TaskDialog extends Dialog<Task> {
         VBox dimSection = new VBox(12, dimHeader, dims);
         dimSection.setPadding(new Insets(14, 16, 14, 16));
         dimSection.setStyle(
-                "-fx-background-color: #F8FAFC;" +
+                "-fx-background-color: white;" +
                         "-fx-background-radius: 10;" +
-                        "-fx-border-color: #E5EAF2;" +
+                        "-fx-border-color: #E5E7EB;" +
                         "-fx-border-radius: 10;"
         );
 
@@ -156,6 +157,7 @@ public class TaskDialog extends Dialog<Task> {
         getDialogPane().setPrefWidth(560);
 
         Button saveButton = (Button) getDialogPane().lookupButton(saveType);
+        DialogTheme.primary(saveButton);
         saveButton.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> titleField.getText().trim().isEmpty(),
                 titleField.textProperty()));
@@ -264,15 +266,15 @@ public class TaskDialog extends Dialog<Task> {
         heading.setStyle(
                 "-fx-font-size: 13px;" +
                         "-fx-font-weight: bold;" +
-                        "-fx-text-fill: #315DB5;"
+                        "-fx-text-fill: " + DialogTheme.HEADING + ";"
         );
 
         VBox box = new VBox(10, heading, body);
         box.setPadding(new Insets(14, 16, 14, 16));
         box.setStyle(
-                "-fx-background-color: #F8FAFC;" +
+                "-fx-background-color: white;" +
                         "-fx-background-radius: 10;" +
-                        "-fx-border-color: #E5EAF2;" +
+                        "-fx-border-color: #E5E7EB;" +
                         "-fx-border-radius: 10;"
         );
         return box;

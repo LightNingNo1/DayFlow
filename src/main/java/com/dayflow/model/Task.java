@@ -15,6 +15,9 @@ public class Task {
         MANUAL, CANVAS
     }
 
+    /** 数据库主键；0 表示尚未入库。 */
+    private int id;
+
     private final String title;
     private final LocalTime time;
     private final String category;
@@ -72,6 +75,14 @@ public class Task {
     }
 
     // —— 基础字段 ——
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitle() {
         return title;

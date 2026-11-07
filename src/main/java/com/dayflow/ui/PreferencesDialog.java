@@ -43,6 +43,7 @@ public class PreferencesDialog extends Dialog<Void> {
 
         ButtonType saveType = new ButtonType("保存", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
+        DialogTheme.apply(getDialogPane());
 
         // —— 悬浮窗外观 ——
         Slider opacity = new Slider(0.30, 1.00, AppPreferences.getFloatOpacity());
@@ -94,13 +95,7 @@ public class PreferencesDialog extends Dialog<Void> {
         urlField.setPromptText("https://canvas.hainanu.edu.cn");
 
         Button importButton = new Button("📥 从 Canvas 导入作业");
-        importButton.setStyle(
-                "-fx-background-color: #007A33;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-background-radius: 8px;" +
-                        "-fx-padding: 8px 14px;" +
-                        "-fx-cursor: hand;"
-        );
+        DialogTheme.primary(importButton);
         importButton.setOnAction(e -> {
             AppPreferences.setCanvasUrl(urlField.getText().trim());
             WebViewImportDialog.open(store, onImported);
@@ -119,6 +114,7 @@ public class PreferencesDialog extends Dialog<Void> {
 
         getDialogPane().setContent(content);
         getDialogPane().setPrefWidth(600);
+        DialogTheme.primary((Button) getDialogPane().lookupButton(saveType));
 
         setResultConverter(button -> {
             if (button != saveType) {
@@ -192,15 +188,15 @@ public class PreferencesDialog extends Dialog<Void> {
         heading.setStyle(
                 "-fx-font-size: 13px;" +
                         "-fx-font-weight: bold;" +
-                        "-fx-text-fill: #315DB5;"
+                        "-fx-text-fill: " + DialogTheme.HEADING + ";"
         );
 
         VBox box = new VBox(10, heading, body);
         box.setPadding(new Insets(14, 16, 14, 16));
         box.setStyle(
-                "-fx-background-color: #F8FAFC;" +
+                "-fx-background-color: white;" +
                         "-fx-background-radius: 10;" +
-                        "-fx-border-color: #E5EAF2;" +
+                        "-fx-border-color: #E5E7EB;" +
                         "-fx-border-radius: 10;"
         );
         return box;

@@ -11,20 +11,37 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 任务数据仓库：负责任务的增删和按视图查询。
+ * 任务数据仓库：负责任务的增删和按视图查询，所有变更同步写入 SQLite。
  */
 public class TaskStore {
 
     private final List<Task> tasks = new ArrayList<>();
     private final List<Runnable> listeners = new CopyOnWriteArrayList<>();
+    private final TaskDatabase db;
+
+    /** 打开默认数据库并加载全部任务。 */
+    public TaskStore() {
+        this(TaskDatabase.openDefault());
+    }
+
+    /** 使用指定数据库（便于测试）。 */
+    public TaskStore(TaskDatabase db) {
+        this.db = db;
+        tasks.addAll(db.loadAll());
+    }
 
     /** 注册数据变更监听（悬浮窗等外部视图用来即时刷新）。 */
     public void addListener(Runnable listener) {
         listeners.add(listener);
     }
 
-    /** 任务内容被就地修改（如勾选完成）后，通知监听者。 */
+    /** 任务内容被就地修改（如勾选完成）后，落库并通知监听者。 */
     public void touch() {
+        for (Task task : tasks) {
+            if (task.getId() > 0) {
+                db.update(task);
+            }
+        }
         fireChange();
     }
 
@@ -35,13 +52,22 @@ public class TaskStore {
     }
 
     public void add(Task task) {
+        task.setId(db.insert(task));
         tasks.add(task);
         fireChange();
     }
 
     public void remove(Task task) {
+        if (task.getId() > 0) {
+            db.delete(task.getId());
+        }
         tasks.remove(task);
         fireChange();
+    }
+
+    /** 当前是否一条任务都没有（用于决定是否播种演示数据）。 */
+    public boolean isEmpty() {
+        return tasks.isEmpty();
     }
 
     /**
